@@ -15,6 +15,12 @@ A Flatlist with alphabet sidebar.
         />
 ```
 
+## Example
+
+Please check the [example](https://github.com/ayushnawani/react-native-alphabetflatlist/blob/master/example/AlphabetFlatListExample.js) folder.
+
+![](https://github.com/ayushnawani/react-native-alphabetflatlist/blob/master/example/demo.gif)
+
 ## Props
 
 You can use all the props provided by FlatList.
