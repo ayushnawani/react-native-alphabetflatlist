@@ -30,7 +30,6 @@ const APP_FONT_FAMILY = Platform.select({
 export default class AlphabetFlatListExample extends Component {
   constructor(props) {
     super(props)
-    let letters = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('')
 
     this.viewabilityConfig = {
       itemVisiblePercentThreshold: 50
