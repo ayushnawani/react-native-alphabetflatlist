@@ -149,7 +149,7 @@ export default class AlphabetFlatList extends Component {
             scrollEventThrottle={16}
             onViewableItemsChanged={this.onViewableItemsChanged}
             extraData={this.props}
-            getItemLayout={this.getItemLayout}
+            getItemLayout={this.props.getItemLayout}
             {...this.props}
           />
         </View>
