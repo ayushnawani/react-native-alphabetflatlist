@@ -149,12 +149,13 @@ export default class AlphabetFlatList extends Component {
     let matchedIndex = this.state.alphabetList.findIndex(
       item => item === letter,
     )
-    matchedIndex > -1 &&
+    if (matchedIndex > -1 && letter !== this.state.selectedLetter) {
       InteractionManager.runAfterInteractions(() => {
         this.setState({
           selectedLetter: letter,
         })
       })
+    }
   }
 
   alphabetKeyExtractor = (item, index) => index
