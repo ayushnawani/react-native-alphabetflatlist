@@ -7,7 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Platform,
-  InteractionManager
+  InteractionManager,
 } from 'react-native'
 
 import PropTypes from 'prop-types'
@@ -16,13 +16,13 @@ const { width, height } = Dimensions.get('window')
 
 const ALPHA_FONT_FAMILY = Platform.select({
   ios: 'Gill Sans',
-  android: 'sans-serif'
+  android: 'sans-serif',
 })
 
 const styleType = PropTypes.oneOfType([
   PropTypes.object,
   PropTypes.number,
-  PropTypes.array
+  PropTypes.array,
 ])
 
 export default class AlphabetFlatList extends Component {
@@ -39,13 +39,14 @@ export default class AlphabetFlatList extends Component {
       alphabetButtonStyle: styleType,
       selectedAlphabetButtonStyle: styleType,
       alphabetTextStyle: styleType,
-      selectedAlphabetTextStyle: styleType
-    })
+      selectedAlphabetTextStyle: styleType,
+    }),
+    matchFieldName: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   }
 
   static defaultProps = {
     viewabilityConfig: {
-      itemVisiblePercentThreshold: 100
+      itemVisiblePercentThreshold: 100,
     },
     keyExtractor: (item, index) => index,
     mainFlatListContainerStyle: {},
@@ -54,8 +55,9 @@ export default class AlphabetFlatList extends Component {
       alphabetButtonStyle: {},
       selectedAlphabetButtonStyle: {},
       alphabetTextStyle: {},
-      selectedAlphabetTextStyle: {}
-    }
+      selectedAlphabetTextStyle: {},
+    },
+    matchFieldName: false,
   }
 
   constructor(props) {
@@ -63,19 +65,28 @@ export default class AlphabetFlatList extends Component {
     let letters = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('')
     this.state = {
       alphabetList: letters,
-      selectedLetter: letters[0]
+      selectedLetter: letters[0],
     }
   }
 
   onPressLetter = selectedItem => {
-    let matchedIndex = this.props.data.findIndex(
-      item => item && item[0].toUpperCase() === selectedItem
-    )
+    let { matchFieldName } = this.props
+
+    let matchedIndex = this.props.data.findIndex(item => {
+      if (matchFieldName && !item[matchFieldName]) {
+        return console.warn(
+          `matchFieldName ${matchFieldName} is not present in data`,
+        )
+      }
+
+      let letterToMatch = matchFieldName ? item[matchFieldName][0] : item[0]
+      return letterToMatch.toUpperCase() === selectedItem
+    })
     if (matchedIndex === -1) return
     this._mainList.scrollToIndex({
       animated: true,
       index: matchedIndex,
-      viewPosition: 0
+      viewPosition: 0,
     })
 
     InteractionManager.runAfterInteractions(() => {
@@ -88,22 +99,22 @@ export default class AlphabetFlatList extends Component {
     this.state.selectedLetter === letter
       ? [
           styles.selectedAlphabetTextStyle,
-          this.props.alphabetListProps.selectedAlphabetTextStyle
+          this.props.alphabetListProps.selectedAlphabetTextStyle,
         ]
       : [
           styles.alphabetTextStyle,
-          this.props.alphabetListProps.alphabetTextStyle
+          this.props.alphabetListProps.alphabetTextStyle,
         ]
 
   setAlphabetButtonStyle = letter =>
     this.state.selectedLetter === letter
       ? [
           styles.alphabetButtonStyle,
-          this.props.alphabetListProps.selectedAlphabetButtonStyle
+          this.props.alphabetListProps.selectedAlphabetButtonStyle,
         ]
       : [
           styles.alphabetButtonStyle,
-          this.props.alphabetListProps.alphabetButtonStyle
+          this.props.alphabetListProps.alphabetButtonStyle,
         ]
 
   renderAlphabetItem = ({ item }) => {
@@ -121,16 +132,30 @@ export default class AlphabetFlatList extends Component {
 
   onViewableItemsChanged = ({ viewableItems, changed }) => {
     let topItem = viewableItems[0]
-    let letter = topItem && topItem.item[0].toUpperCase()
+    let { matchFieldName } = this.props
+    if (!topItem) return
+
+    let { item } = topItem
+
+    if (matchFieldName && !item[matchFieldName]) {
+      return console.warn(
+        `matchFieldName ${matchFieldName} is not present in data`,
+      )
+    }
+
+    let letterToMatch = matchFieldName ? item[matchFieldName][0] : item[0]
+
+    let letter = letterToMatch.toUpperCase()
     let matchedIndex = this.state.alphabetList.findIndex(
-      item => item === letter
+      item => item === letter,
     )
-    matchedIndex > -1 &&
+    if (matchedIndex > -1 && letter !== this.state.selectedLetter) {
       InteractionManager.runAfterInteractions(() => {
         this.setState({
-          selectedLetter: letter
+          selectedLetter: letter,
         })
       })
+    }
   }
 
   alphabetKeyExtractor = (item, index) => index
@@ -141,7 +166,7 @@ export default class AlphabetFlatList extends Component {
         <View
           style={[
             styles.mainFlatListContainerStyle,
-            this.props.mainFlatListContainerStyle
+            this.props.mainFlatListContainerStyle,
           ]}
         >
           <FlatList
@@ -158,7 +183,7 @@ export default class AlphabetFlatList extends Component {
         <View
           style={[
             styles.alphabetListContainerStyle,
-            this.props.alphabetListProps.alphabetListContainerStyle
+            this.props.alphabetListProps.alphabetListContainerStyle,
           ]}
         >
           <FlatList
@@ -180,36 +205,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   mainFlatListContainerStyle: {
     flex: 1,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   alphabetListContainerStyle: {
     flex: 0.2,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   alphabetButtonStyle: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   alphabetButtonContainerStyle: {
     flex: 1,
     paddingVertical: '10%',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   alphabetTextStyle: {
     fontFamily: ALPHA_FONT_FAMILY,
     fontSize: height * 0.026,
-    color: 'rgb(90,90,90)'
+    color: 'rgb(90,90,90)',
   },
   selectedAlphabetTextStyle: {
     fontFamily: ALPHA_FONT_FAMILY,
     fontWeight: '600',
     fontSize: height * 0.026,
-    color: 'rgb(90,90,90)'
-  }
+    color: 'rgb(90,90,90)',
+  },
 })
