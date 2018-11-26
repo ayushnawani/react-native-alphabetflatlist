@@ -48,7 +48,7 @@ export default class AlphabetFlatList extends Component {
     viewabilityConfig: {
       itemVisiblePercentThreshold: 100,
     },
-    keyExtractor: (item, index) => index,
+    keyExtractor: (item, index) => index.toString(),
     mainFlatListContainerStyle: {},
     alphabetListProps: {
       alphabetListContainerStyle: {},
@@ -158,7 +158,7 @@ export default class AlphabetFlatList extends Component {
     }
   }
 
-  alphabetKeyExtractor = (item, index) => index
+  alphabetKeyExtractor = (item, index) => index.toString()
 
   render() {
     return (
